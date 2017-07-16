@@ -9,6 +9,7 @@
 namespace app\api\controller\v1;
 
 
+use app\api\model\BannerModel;
 use app\api\validate\IDPositiveIntValidate;
 
 class Banner {
@@ -19,12 +20,8 @@ class Banner {
      * 指定banner的id号
      */
     public function getBanner($id) {
-//        $data = ['id' => $id];
-//        $mValidate = new IDPositiveIntValidate();
-//
-//        $result = $mValidate->batch()->check($data);
-//        var_dump($mValidate->getError());
         (new IDPositiveIntValidate())->validate();
-        $c = 1;
+        $banner = BannerModel::getBannerByID($id);
+        return $banner;
     }
 }
