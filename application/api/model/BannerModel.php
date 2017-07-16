@@ -9,15 +9,8 @@
 namespace app\api\model;
 
 
-use think\Exception;
-
 class BannerModel {
     public static function getBannerByID($id) {
-        try {
-            1 / 0;
-        } catch (Exception $exception) {
-            throw $exception;
-        }
-        return 'this is banner info';
+        return null;
     }
 }

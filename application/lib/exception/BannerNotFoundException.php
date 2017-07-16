@@ -13,5 +13,5 @@ class BannerNotFoundException extends BaseException {
     //http 状态码 404, 200
     public $code = 404;
     public $message = 'Banner does not exists';
-    public $errorCode = 40001;
+    public $errorCode = 404;
 }

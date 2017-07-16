@@ -9,7 +9,9 @@
 namespace app\lib\exception;
 
 
-class BaseException {
+use think\Exception;
+
+class BaseException extends Exception {
     //http 状态码 404, 200
     public $code = 400;
     public $message = 'Invalide Params';

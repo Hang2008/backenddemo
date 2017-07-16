@@ -11,6 +11,7 @@ namespace app\api\controller\v1;
 
 use app\api\model\BannerModel;
 use app\api\validate\IDPositiveIntValidate;
+use app\lib\exception\BannerNotFoundException;
 
 class Banner {
     /**
@@ -22,6 +23,11 @@ class Banner {
     public function getBanner($id) {
         (new IDPositiveIntValidate())->validate();
         $banner = BannerModel::getBannerByID($id);
+        if (!$banner) {
+            throw new BannerNotFoundException();
+        } else {
+            echo 'godd';
+        }
         return $banner;
     }
 }
