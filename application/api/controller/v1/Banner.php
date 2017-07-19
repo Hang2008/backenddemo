@@ -28,8 +28,8 @@ class Banner {
         if (!$banner) {
             throw new BannerNotFoundException();
         } else {
-            echo 'godd';
+            echo 'OK';
         }
-        return $banner;
+        return json($banner);
     }
 }
