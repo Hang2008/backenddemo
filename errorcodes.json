@@ -1,7 +1,15 @@
 {
-  "internal_server": [
-    {
-      "unknown": 500
+  "internal_server": {
+    "unknown": 500
+  },
+  "client_error": {
+    "code": {
+      "resource_not_found": 404,
+      "bad_param": 400
+    },
+    "error_code": {
+      "general_param_error": 10000,
+      "bad_param": 10001
     }
-  ]
+  }
 }

@@ -12,4 +12,4 @@
 
 //动态注册写法
 use think\Route;
-Route::get('banner/:id', 'api/v1.Banner/getBanner');
+Route::get('api/v1/banner/:id', 'api/v1.Banner/getBanner');

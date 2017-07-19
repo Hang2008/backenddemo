@@ -20,4 +20,8 @@ class IDPositiveIntValidate extends BaseValidate {
             return $field . ' must be a positive integer';
         }
     }
+
+    public function validate() {
+        parent::validate();
+    }
 }

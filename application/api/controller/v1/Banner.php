@@ -12,6 +12,8 @@ namespace app\api\controller\v1;
 use app\api\model\BannerModel;
 use app\api\validate\IDPositiveIntValidate;
 use app\lib\exception\BannerNotFoundException;
+use app\lib\exception\BaseException;
+use think\Exception;
 
 class Banner {
     /**

@@ -9,18 +9,26 @@
 namespace app\api\validate;
 
 
-use think\Exception;
-use think\Validate;
+use app\lib\exception\ParameterException;
 use think\Request;
+use think\Validate;
 
 class BaseValidate extends Validate {
     public function validate() {
         $params = Request::instance()->param();
-        $result = $this->check($params);
+        $result = $this->batch()->check($params);
         if (!$result) {
-            $error = $this->error;
-            throw new Exception($error);
+            $temp = '';
+            if (is_array($this->error)) {
+                foreach ($this->error as $msg) {
+                    $temp = $temp . ";" . $msg;
+                }
+                $this->error = $temp;
+            }
+            $e = new ParameterException(["message" => $this->error]);
+            throw $e;
+        } else {
+            return true;
         }
-        return true;
     }
 }
