@@ -13,7 +13,7 @@ use think\Db;
 
 class BannerModel {
     public static function getBannerByID($id) {
-        $result = Db::query('select * from banner_item where img_id=?', [3]);
+        $result = Db::query('select * from banner_item where banner_id=?', [$id]);
         return $result;
     }
 }
