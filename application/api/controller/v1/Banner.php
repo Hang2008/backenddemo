@@ -9,11 +9,10 @@
 namespace app\api\controller\v1;
 
 
-use app\api\model\BannerModel;
+use app\api\model\Banner as BannerModel;
 use app\api\validate\IDPositiveIntValidate;
 use app\lib\exception\BannerNotFoundException;
-use app\lib\exception\BaseException;
-use think\Exception;
+use think\Model;
 
 class Banner {
     /**
@@ -24,12 +23,13 @@ class Banner {
      */
     public function getBanner($id) {
         (new IDPositiveIntValidate())->validate();
-        $banner = BannerModel::getBannerByID($id);
+        $banner = BannerModel::get($id);
+//        $banner = Banner::getBannerByID($id);
         if (!$banner) {
             throw new BannerNotFoundException();
-        } else {
-            echo 'OK';
         }
-        return json($banner);
+        //返回的model就可以不用自己组装json
+//        return json($banner);
+        return $banner;
     }
 }
