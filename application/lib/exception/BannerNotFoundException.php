@@ -12,6 +12,6 @@ namespace app\lib\exception;
 class BannerNotFoundException extends BaseException {
     //http 状态码 404, 200
     public $code = 404;
-    public $message = 'Banner does not exists';
+    public $message = 'BannerModel does not exists';
     public $errorCode = 404;
 }
