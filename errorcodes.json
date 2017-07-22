@@ -9,7 +9,8 @@
     },
     "error_code": {
       "general_param_error": 10000,
-      "bad_param": 10001
+      "bad_param": 10001,
+      "theme_not_found": 30000
     }
   }
 }

@@ -3,7 +3,8 @@
 namespace app\api\model;
 
 class ThemeModel extends BaseModel {
-    protected $table = 'theme';
+    protected $table = 'theme'; 
+    protected $hidden = ['delete_time', 'update_time', 'topic_img_id', 'head_img_id'];
 
     public static function getThemes() {
         return self::with(['topicImg', 'headImg']);
