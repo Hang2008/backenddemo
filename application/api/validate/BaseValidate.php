@@ -37,7 +37,9 @@ class BaseValidate extends Validate {
             return true;
         } else {
             //指明字段$field
-            return $field . ' must be a positive integer';
+//            return $field . ' must be a positive integer';
+            return false;
         }
+
     }
 }

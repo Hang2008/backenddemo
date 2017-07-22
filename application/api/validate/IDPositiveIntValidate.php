@@ -11,6 +11,7 @@ namespace app\api\validate;
 
 class IDPositiveIntValidate extends BaseValidate {
     protected $rule = ['id' => 'require|isPositiveInteger'];
+    protected $message = ['id' => 'id must be a positive integer'];
 
     public function validate() {
         parent::validate();
