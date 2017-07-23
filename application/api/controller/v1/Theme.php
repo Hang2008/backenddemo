@@ -19,7 +19,7 @@ class Theme {
         $result = ThemeModel::with(['topicImg', 'headImg'])->select($ids);
 //我写的
 //        $themes = ThemeModel::getThemes();
-        if (!$result) {
+        if ($result->isEmpty()) {
             throw new ThemeNotFoundException();
         }
         return $result;

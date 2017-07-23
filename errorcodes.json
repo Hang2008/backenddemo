@@ -10,7 +10,10 @@
     "error_code": {
       "general_param_error": 10000,
       "bad_param": 10001,
-      "theme_not_found": 30000
+      "banner_not_found": 20000,
+      "theme_not_found": 30000,
+      "product_not_found": 40000,
+      "category_not_found": 50000
     }
   }
 }
