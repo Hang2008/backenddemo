@@ -9,4 +9,8 @@ class ProductModel extends BaseModel {
     protected function getMainImgUrlAttr($value, $data) {
         return $this->handleImageUrl($value, $data);
     }
+
+    public static function getRecents($count) {
+        return self::limit($count)->order('create_time', 'desc')->select();
+    }
 }
