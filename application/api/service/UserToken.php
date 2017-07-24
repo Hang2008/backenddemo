@@ -48,10 +48,7 @@ class UserToken {
     }
 
     private function processLoginError($wxResult) {
-        throw new WeChatException([
-            'message' => $wxResult['errmsg'],
-            'errorCode' => $wxResult['errcode']
-        ]);
+        throw new WeChatException(['message' => $wxResult['errmsg'], 'errorCode' => $wxResult['errcode']]);
     }
 
     private function grantToken($wxResult) {
@@ -59,7 +56,9 @@ class UserToken {
         //看数据库里是否存在此openid, 如果存在则不处理,如果不存在,新增一条记录
         //生成令牌,准备缓存数据,写入缓存
         //返回令牌到客户端
-
+        //令牌对应所有信息是key
+        //key: token
+        //value: $wxResult, uid, scope
         $openid = $wxResult['openid'];
         $user = UserModel::getUserByOpenID($openid);
         if ($user) {
@@ -67,13 +66,23 @@ class UserToken {
         } else {
             $uid = $this->createUser($openid);
         }
+        $value = $this->createCahceValue($wxResult, $uid);
 
     }
 
+    private function createCahceValue($wxResult, $uid) {
+        $cacheValue = $wxResult;
+        $cacheValue['uid'] = $uid;
+        $cacheValue['scope'] = 16;
+        return $cacheValue;
+    }
+
     private function createUser($openid) {
-        $user = UserModel::create([
-            'openid' => $openid
-        ]);
+        $user = UserModel::create(['openid' => $openid]);
         return $user->id;
+    }
+
+    private function saveToCache($key, $value) {
+
     }
 }
