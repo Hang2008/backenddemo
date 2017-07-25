@@ -16,7 +16,7 @@ class Token {
         //用三组字符串进行md5加密,为了安全性
         $timestamp = $_SERVER['REQUEST_TIME_FLOAT'];
         //salt 随机字符串
-        $salt = config('encrypt');
+        $salt = config('encrypt.tokensalt');
         return md5($randomCharts . $timestamp . $salt);
     }
 }
