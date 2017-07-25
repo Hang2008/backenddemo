@@ -15,11 +15,6 @@ class UserModel extends BaseModel {
 
     public static function getUserByOpenID($openid) {
         $user = self::where('openid', '=', $openid)->find();
-        if ($user) {
-
-        } else {
-
-        }
-        return '';
+        return $user;
     }
 }

@@ -17,5 +17,9 @@ class Token {
         (new TokenGet())->validate();
         $ut = new UserToken($code);
         $token = $ut->get();
+        //框架会自动把数组转化成json返回
+        return [
+            'token' => $token
+        ];
     }
 }

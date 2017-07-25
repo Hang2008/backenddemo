@@ -10,10 +10,11 @@ namespace app\api\service;
 
 
 use app\api\model\UserModel;
+use app\lib\exception\TokenException;
 use app\lib\exception\WeChatException;
 use think\Exception;
 
-class UserToken {
+class UserToken extends Token {
     protected $code;
     protected $wxAppId;
     protected $wxAppSecret;
@@ -42,9 +43,9 @@ class UserToken {
         } else if (array_key_exists('errcode', $wxResult)) {
             $this->processLoginError($wxResult);
         } else {
-            $this->grantToken($wxResult);
+            //拿到了openid然后去去拿token
+            return $this->grantToken($wxResult);
         }
-        return '';
     }
 
     private function processLoginError($wxResult) {
@@ -52,7 +53,7 @@ class UserToken {
     }
 
     private function grantToken($wxResult) {
-        //拿到openid
+        //拿到openid后服务器端生成token并返回给客户端
         //看数据库里是否存在此openid, 如果存在则不处理,如果不存在,新增一条记录
         //生成令牌,准备缓存数据,写入缓存
         //返回令牌到客户端
@@ -64,12 +65,14 @@ class UserToken {
         if ($user) {
             $uid = $user->id;
         } else {
+            //如果数据库中没有用户则插入一条数据创建用户
             $uid = $this->createUser($openid);
         }
         $value = $this->createCahceValue($wxResult, $uid);
-
+        return $this->saveToCache($value);
     }
 
+    //创建缓存数据, 需要保存wx数据, uid和scope 是一组数字
     private function createCahceValue($wxResult, $uid) {
         $cacheValue = $wxResult;
         $cacheValue['uid'] = $uid;
@@ -82,7 +85,21 @@ class UserToken {
         return $user->id;
     }
 
-    private function saveToCache($key, $value) {
+    private function saveToCache($value) {
+        $key = self::generateToken();
+        //数组转化成json格式字符串
+        $value = json_encode($value);
+        //给token设置一个过期时间
+        $expire_in = config('custom.token_expire_in');
 
+        //这个地方既能保存又能获取?很神奇..
+        $request = cache($key, $value, $expire_in);
+        if (!$request) {
+            throw new TokenException([
+                'message' => 'Server cache error',
+                'errorCode' => 10003
+            ]);
+        }
+        return $key;
     }
 }
