@@ -35,4 +35,13 @@ class Product {
         }
         return $results->hidden(['summary']);
     }
+
+    public function getOneById($id = '') {
+        (new IDPositiveIntValidate())->validate();
+        $results = ProductModel::getDetailById($id);
+        if (!$results) {
+            throw new ProductNotFoundException();
+        }
+        return $results->hidden(['summary']);
+    }
 }

@@ -19,4 +19,19 @@ class ProductModel extends BaseModel {
         //        return self::find($id);
         return self::where('category_id', '=', $id)->select();
     }
+
+    public static function getDetailById($id) {
+        //我写的
+        $product = self::with(['images', 'properties', 'images.imgUrl'])->find($id);
+//        var_dump($product);
+        return $product;
+    }
+
+    public function images() {
+        return $this->hasMany('ProductImageModel', 'product_id', 'id');
+    }
+
+    public function properties() {
+        return $this->hasMany('PropertiesModel', 'product_id', 'id');
+    }
 }
