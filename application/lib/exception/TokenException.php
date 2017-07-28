@@ -10,7 +10,7 @@ namespace app\lib\exception;
 
 
 class TokenException extends BaseException {
-    public $code = 400;
-    public $message = 'Token Exception';
+    public $code = 401;
+    public $message = 'Token has expired or been invalid';
     public $errorCode = 10000;
 }

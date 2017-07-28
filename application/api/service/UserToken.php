@@ -80,6 +80,7 @@ class UserToken extends Token {
         return $cacheValue;
     }
 
+    //在user表里面插入一条数据
     private function createUser($openid) {
         $user = UserModel::create(['openid' => $openid]);
         return $user->id;
