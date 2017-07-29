@@ -15,7 +15,8 @@
       "banner_not_found": 20000,
       "theme_not_found": 30000,
       "product_not_found": 40000,
-      "category_not_found": 50000
+      "category_not_found": 50000,
+      "user_not_found": 60000
     }
   }
 }
