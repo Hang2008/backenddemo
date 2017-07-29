@@ -10,12 +10,7 @@ namespace app\api\validate;
 
 
 class AddressNew extends BaseValidate {
-    protected $rule = [
-        'name' => 'require|isNotempty',
-        'mobile' => 'require|isMobile',
-        'province' => 'require|isNotempty',
-        'city' => 'require|isNotempty',
-        'country' => 'require|isNotempty',
-        'detail' => 'require|isNotempty'
-    ];
+    protected $rule = ['name' => 'require|isNotempty', 'mobile' => 'require|isMobile',
+                       'province' => 'require|isNotempty', 'city' => 'require|isNotempty',
+                       'country' => 'require|isNotempty', 'detail' => 'require|isNotempty'];
 }

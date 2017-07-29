@@ -11,5 +11,5 @@ namespace app\api\model;
 
 class UserAddressModel extends BaseModel {
     protected $table = 'user_address';
-    protected $hidden = ['delete_time', 'update_time'];
+    protected $hidden = ['id', 'delete_time', 'update_time'];
 }

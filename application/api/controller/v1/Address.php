@@ -30,17 +30,19 @@ class Address {
         }
         //input从客户端获取所有post参数变量
         $dataArray = $validate->getDataByRule(input('post.'));
-        $userAddress = $user->address($uid);
+        $userAddress = $user->address;
         if (!$userAddress) {
+            //通过关联模型来新增address
             //用关联模型save? 这玩意不知用来查询的么?还能save?
             $user->address()
-                 ->save($$dataArray);
+                 ->save($dataArray);
         } else {
             //更新的话没有()直接读取address?
             $user->address->save($dataArray);
         }
         //不返回整个对象
 //        return $user;
-        return new SuccessMessage();
+        //可以加一个状态码指定http返回不然默认是200
+        return json(new SuccessMessage(), 201);
     }
 }
