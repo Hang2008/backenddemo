@@ -12,13 +12,16 @@ class ProductModel extends BaseModel {
 
     public static function getRecents($count) {
         //对当前查询模型进行直接排序
-        return self::limit($count)->order('create_time', 'desc')->select();
+        return self::limit($count)
+                   ->order('create_time', 'desc')
+                   ->select();
     }
 
     public static function getByCategory($id) {
         //我写的
         //        return self::find($id);
-        return self::where('category_id', '=', $id)->select();
+        return self::where('category_id', '=', $id)
+                   ->select();
     }
 
     public static function getDetailById($id) {
@@ -26,8 +29,10 @@ class ProductModel extends BaseModel {
 //        $product = self::with(['images.imgUrl'])->with(['properties'])->find($id);
         $product = self::with(['images' => function ($query) {
             //这里可以针对关联模型进行排序
-            $query->with(['imgUrl'])->order('order', 'asc');
-        }])->with(['properties'])->find($id);
+            $query->with(['imgUrl'])
+                  ->order('order', 'asc');
+        }])->with(['properties'])
+           ->find($id);
 //        var_dump($product);
         return $product;
     }

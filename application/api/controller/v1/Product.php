@@ -44,4 +44,8 @@ class Product {
         }
         return $results->hidden(['summary']);
     }
+
+    public function deleteOne($id) {
+
+    }
 }

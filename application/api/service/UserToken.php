@@ -10,6 +10,7 @@ namespace app\api\service;
 
 
 use app\api\model\UserModel;
+use app\lib\enum\ScopeEnum;
 use app\lib\exception\TokenException;
 use app\lib\exception\WeChatException;
 use think\Exception;
@@ -76,7 +77,9 @@ class UserToken extends Token {
     private function createCahceValue($wxResult, $uid) {
         $cacheValue = $wxResult;
         $cacheValue['uid'] = $uid;
-        $cacheValue['scope'] = 16;
+        //scope =16 代表App用户的权限
+        $cacheValue['scope'] = ScopeEnum::User;
+        //scope =32(其他) 代表CMS(管理员)用户的权限
         return $cacheValue;
     }
 
@@ -96,10 +99,7 @@ class UserToken extends Token {
         //这个地方既能保存又能获取?很神奇..
         $request = cache($key, $value, $expire_in);
         if (!$request) {
-            throw new TokenException([
-                'message' => 'Server cache error',
-                'errorCode' => 10003
-            ]);
+            throw new TokenException(['message' => 'Server cache error', 'errorCode' => 10003]);
         }
         return $key;
     }

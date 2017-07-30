@@ -27,7 +27,8 @@ class Token {
 
     public static function getCurrentTokenVar($key) {
         //Request是个全局的 不光是在controller里面能调用
-        $token = Request::instance()->header('token');
+        $token = Request::instance()
+                        ->header('token');
         $vars = Cache::get($token);
         if (!$vars) {
             throw new TokenException();
@@ -49,5 +50,10 @@ class Token {
     public static function getCurrentUID() {
         $uid = self::getCurrentTokenVar('uid');
         return $uid;
+    }
+
+    public static function getCurrentPrivilege() {
+        $scope = self::getCurrentTokenVar('scope');
+        return $scope;
     }
 }

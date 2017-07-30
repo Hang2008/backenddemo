@@ -15,6 +15,7 @@ class UserModel extends BaseModel {
 
     public function address() {
         //在没有外键的一方定义一对一关系用hasone
+        //拥有外键的一方定义一对一关系用belongsto
         //我写的
 //        return self::hasOne('UserAddressModel', 'user_id', 'id')
 //                   ->where('user_id', '=', $id)
