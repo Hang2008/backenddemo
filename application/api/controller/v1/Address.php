@@ -9,32 +9,17 @@
 namespace app\api\controller\v1;
 
 
+use app\api\controller\BaseController;
 use app\api\model\UserModel;
-use app\api\validate\AddressNew;
 use app\api\service\Token as TokenService;
-use app\lib\enum\ScopeEnum;
+use app\api\validate\AddressNew;
 use app\lib\exception\SuccessMessage;
-use app\lib\exception\TokenException;
 use app\lib\exception\UserNotFoundException;
-use app\lib\exception\UserPrivilegeException;
-use think\Controller;
 
 //为了使用前置方法必须继承基类控制器
-class Address extends Controller {
+class Address extends BaseController {
     //表示只有createOrUpdateAddress方法需要前置操作checkUserPrivilege
     protected $beforeActionList = ['checkUserPrivilege' => ['only' => 'createOrUpdateAddress']];
-
-    //不能用private我也是醉了
-    protected function checkUserPrivilege() {
-        $scope = TokenService::getCurrentPrivilege();
-        if ($scope) {
-            if ($scope<ScopeEnum::User) {
-                throw new UserPrivilegeException();
-            }
-        } else {
-            throw new TokenException();
-        }
-    }
 
     public function createOrUpdateAddress() {
         $validate = new AddressNew();

@@ -34,7 +34,7 @@ class Banner {
         //对象的几种方法
 //        $banner->hidden(['delete_time', 'update_time']);
 //        $banner->visible(['id']);
-        if ($banner->isEmpty()) {
+        if (!$banner) {
             throw new BannerNotFoundException();
         }
 

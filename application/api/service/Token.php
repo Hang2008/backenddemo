@@ -9,7 +9,9 @@
 namespace app\api\service;
 
 
+use app\lib\enum\ScopeEnum;
 use app\lib\exception\TokenException;
+use app\lib\exception\UserPrivilegeException;
 use think\Cache;
 use think\Exception;
 use think\Request;
@@ -55,5 +57,31 @@ class Token {
     public static function getCurrentPrivilege() {
         $scope = self::getCurrentTokenVar('scope');
         return $scope;
+    }
+
+    //检查是否是用户和管理员都可以访问
+    public static function checkPrimaryPrivilege() {
+        $scope = self::getCurrentPrivilege();
+        if ($scope) {
+            if ($scope < ScopeEnum::User) {
+                throw new UserPrivilegeException();
+            }
+        } else {
+            throw new TokenException();
+        }
+    }
+
+    //检查是否是不允许管理员访问
+    public static function excludeAdminUser() {
+        $scope = self::getCurrentPrivilege();
+        if ($scope) {
+            if ($scope == ScopeEnum::User) {
+                return true;
+            } else {
+                throw new UserPrivilegeException();
+            }
+        } else {
+            throw new TokenException();
+        }
     }
 }

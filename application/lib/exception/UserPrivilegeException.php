@@ -11,6 +11,6 @@ namespace app\lib\exception;
 
 class UserPrivilegeException extends BaseException {
     public $code = 403;
-    public $message = 'Current user has no privilege to access adress dada';
+    public $message = 'Current user has no privilege to access';
     public $errorCode = 10004;
 }
