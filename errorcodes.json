@@ -18,6 +18,7 @@
       "product_not_found": 40000,
       "category_not_found": 50000,
       "user_not_found": 60000,
+      "user_address_not_found": 60001,
       "order_not_exist": 80000
     }
   }

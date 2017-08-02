@@ -10,7 +10,9 @@ namespace app\api\service;
 
 
 use app\api\model\ProductModel;
+use app\api\model\UserAddressModel;
 use app\lib\exception\OrderException;
+use app\lib\exception\UserNotFoundException;
 
 class OrderService {
     //客户端传递过来的products参数
@@ -19,31 +21,79 @@ class OrderService {
     protected $mProductsDatabase;
     protected $uid;
 
+    /*
+     * @$uid 下单目标
+     * @$rawProducts 下单参数
+     *
+     * */
     public function submitOrder($uid, $rawProducts) {
         //对比$rawProducts和$mProductsDatabase
-        //从数据库查询$mProductsDatabase
         $this->rawProducts = $rawProducts;
+        //从数据库查询$mProductsDatabase
         $this->mProductsDatabase = $this->getProductsByRaw($rawProducts);
         $this->uid = $uid;
+        $status = $this->getOrderStatus();
+
+        //如果pass是false, 那么依然返回客户端一个-1的订单号,流程结束!
+        if (!$status['pass']) {
+            $status['order_id'] = -1;
+            return $status;
+        }
+        //如果没有结束,开始创建订单
+
+        //订单快照, 用户下单瞬间生成的商品信息, 以后任何数据改变都不会改变快照, 快照信息保存在订单表里
+        $orderSnap = $this->snapOrder($status);
+
     }
 
+    private function snapOrder($status) {
+        $snap = ['orderSum' => 0, 'totalCount' => 0, ' pStatus' => [], 'snapAddress' => null, 'snapName' => '',
+                 'snapImg' => ''];
+        $snap['orderSum'] = $status['sumPrice'];
+        $snap['totalCount'] = $status['totalCount'];
+        $snap['pStatus'] = $status['pStatusArray'];
+        //把数组序列化橙json字符串才能保存到数据库中
+        //* 存 储对象最好用nosql 数据库比如mogodb,而非关系型数据库
+        //* 这种存数方式对于检索历史信息很困难 就要做索引了
+        $snap['snapAddress'] = json_encode($this->getUserAddress());
+        //订单缩略信息
+        $snap['snapName'] = $this->mProductsDatabase[0]['name'];
+        $snap['snapImg'] = $this->mProductsDatabase[0]['main_img_url'];
+        if (count($this->mProductsDatabase) > 1) {
+            $snap['snapName'] .= "等";
+        }
+        return $snap;
+    }
+
+    private function getUserAddress() {
+        $address = UserAddressModel::where('user_id ', '=', $this->uid)
+                                   ->find();
+        if (!$address) {
+            throw new UserNotFoundException(['messgae' => 'User address does not exist', '$errorCode' => 60001]);
+        } else {
+            return $address->toArray();
+        }
+    }
+
+    //判断库存量业务逻辑
     private function getOrderStatus() {
         //一组商品中任何一个商品缺货都认为订单失败
         //pStatusArray保存订单商品详细信息,客户端可以在历史订单和未支付订单中查看
-        $status = ['pass' => true, 'sumPrice' => 0, 'pStatusArray' => []];
-
-        //遍历来对比库存量
+        $status = ['pass' => true, 'sumPrice' => 0, 'totalCount' => 0, 'pStatusArray' => []];
         foreach ($this->rawProducts as $product) {
             $pStatus = $this->getProductStatus($product['product_id'], $product['count'], $this->mProductsDatabase);
+            //任何一个商品缺货都把订单pass设为false
             if (!$pStatus['haveStock']) {
                 $status['pass'] = false;
-            } 
+            }
+            $status['totalCount'] += $product['count'];
             $status['sumPrice'] += $pStatus['totalPrice'];
             array_push($status['pStatusArray'], $pStatus);
         }
-
+        return $status;
     }
 
+    //生成每一种商品的库存量状态和的总价
     //$pIndex表示$rawPID在$products数组中id 的序号
     private function getProductStatus($rawPID, $rawCount, $products) {
         $pIndex = -1;
@@ -76,6 +126,7 @@ class OrderService {
     //根据订单信息查找真实商品信息
     private function getProductsByRaw($raw) {
         $rawPIDs = [];
+        //把id全部取出一次性查询, 避免循环查询数据库!
         foreach ($raw as $item) {
             array_push($rawPIDs, $item['product_id']);
         }
