@@ -15,6 +15,7 @@ use app\api\model\ProductModel;
 use app\api\model\UserAddressModel;
 use app\lib\exception\OrderException;
 use app\lib\exception\UserNotFoundException;
+use think\Db;
 use think\Exception;
 
 class OrderService {
@@ -53,6 +54,8 @@ class OrderService {
     }
 
     private function createOrder($snap) {
+        //为了防止多个任务处理的时候出现异常,所以用事物处理
+        Db::startTrans();
         try {
             //order和product是多对多关系
             //处理多对多关系拆成2个模型单独保存(一对多同理拆成2方一对一,先保存1,再保存多)
@@ -72,14 +75,17 @@ class OrderService {
             //处理多对对关系order_product中间表
             $orderID = $order->id;
             $create_time = $order->create_time;
-            foreach ($this->rawProducts as $p) {
+            //&$p! 不是 $p, 否则$this->rawProducts的值并不会改变, 推测这玩意取的是地址!
+            foreach ($this->rawProducts as &$p) {
                 $p['order_id'] = $orderID;
             }
             $orderProduct = new OrderProductModel();
             //存储对象是一个数组,所以用saveall
             $orderProduct->saveAll($this->rawProducts);
+            Db::commit();
             return ['order_no' => $orderNumber, 'order_id' => $orderID, 'create_time' => $create_time];
         } catch (Exception $e) {
+            Db::rollback();
             throw $e;
         }
     }
