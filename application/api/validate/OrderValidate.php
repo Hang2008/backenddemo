@@ -27,19 +27,22 @@ class OrderValidate extends BaseValidate {
                 'message' => 'Products list should not be empty'
             ]);
         }
-        if (is_array($value)){
-            throw new ParameterException([
-                'message' => 'Products list should be an array'
-            ]);
-        }
+        //这个地方吊{a,b}不是数组
+//        if (is_array($value)){
+//            throw new ParameterException([
+//                'message' => 'Products list should be an array'
+//            ]);
+//        }
         foreach ($value as $item){
             $this->checkProductList($item);
         }
+        //别忘了子类验证器要返回验证结果!
+        return true;
     }
 
     protected function checkProductList($value){
         $validate= new BaseValidate($this->subRule);
-        $result = $validate->validate($value);
+        $result = $validate->check($value);
         if (!$result){
             throw new ParameterException([
                 'message' => "Product list item params error"

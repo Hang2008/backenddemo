@@ -9,10 +9,13 @@
 namespace app\api\service;
 
 
+use app\api\model\OrderModel;
+use app\api\model\OrderProductModel;
 use app\api\model\ProductModel;
 use app\api\model\UserAddressModel;
 use app\lib\exception\OrderException;
 use app\lib\exception\UserNotFoundException;
+use think\Exception;
 
 class OrderService {
     //客户端传递过来的products参数
@@ -43,7 +46,42 @@ class OrderService {
 
         //订单快照, 用户下单瞬间生成的商品信息, 以后任何数据改变都不会改变快照, 快照信息保存在订单表里
         $orderSnap = $this->snapOrder($status);
+        //创建订单 写入数据库
+        $order = $this->createOrder($orderSnap);
+        $order['pass'] = true;
+        return $order;
+    }
 
+    private function createOrder($snap) {
+        try {
+            //order和product是多对多关系
+            //处理多对多关系拆成2个模型单独保存(一对多同理拆成2方一对一,先保存1,再保存多)
+            //存储order表
+            $orderNumber = $this->makeOrderNo();
+            $order = new OrderModel();
+            $order->user_id = $this->uid;
+            $order->order_no = $orderNumber;
+            $order->total_price = $snap['orderSum'];
+            $order->total_count = $snap['totalCount'];
+            $order->snap_img = $snap['snapImg'];
+            $order->snap_name = $snap['snapName'];
+            $order->snap_address = $snap['snapAddress'];
+            $order->snap_items = json_encode($snap['pStatus']);
+            $order->save();
+
+            //处理多对对关系order_product中间表
+            $orderID = $order->id;
+            $create_time = $order->create_time;
+            foreach ($this->rawProducts as $p) {
+                $p['order_id'] = $orderID;
+            }
+            $orderProduct = new OrderProductModel();
+            //存储对象是一个数组,所以用saveall
+            $orderProduct->saveAll($this->rawProducts);
+            return ['order_no' => $orderNumber, 'order_id' => $orderID, 'create_time' => $create_time];
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
     private function snapOrder($status) {
@@ -134,5 +172,11 @@ class OrderService {
                                 ->visible(['id', 'price', 'stock', 'name', 'main_img_url'])//查询出来是个collection转化成数组更好!
                                 ->toArray();
         return $products;
+    }
+
+    public static function makeOrderNo() {
+        $yCode = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J');
+        $orderSn = $yCode[intval(date('Y')) - 2017] . strtoupper(dechex(date('m'))) . date('d') . substr(time(), -5) . substr(microtime(), 2, 5) . sprintf('%02d', rand(0, 99));
+        return $orderSn;
     }
 }

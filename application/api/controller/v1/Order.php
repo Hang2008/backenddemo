@@ -10,6 +10,7 @@ namespace app\api\controller\v1;
 
 
 use app\api\controller\BaseController;
+use app\api\service\OrderService;
 use app\api\validate\OrderValidate;
 use app\api\service\Token as TokenService;
 
@@ -29,7 +30,10 @@ class Order extends BaseController {
     public function submitOrder() {
         (new OrderValidate())->validate();
         //products是一个数组,要用/a才能获取的到
-         $products = input('post.products/a');
-         $uid = TokenService::getCurrentUID();
+        $products = input('post.products/a');
+        $uid = TokenService::getCurrentUID();
+        $order = new OrderService();
+        $status = $order->submitOrder($uid, $products);
+        return $status;
     }
 }
