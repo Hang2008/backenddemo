@@ -13,6 +13,7 @@
       "we_chat_error": 10002,
       "token_exception": 10003,
       "user_privilege": 10004,
+      "oerder_x_match_user": 10005,
       "banner_not_found": 20000,
       "theme_not_found": 30000,
       "product_not_found": 40000,

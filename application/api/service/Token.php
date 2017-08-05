@@ -84,4 +84,12 @@ class Token {
             throw new TokenException();
         }
     }
+
+    public static function isValidOperation($uidToCheck) {
+        if (!$uidToCheck) {
+            throw new Exception('Validate operation but uid is null');
+        }
+        $currentUid = self::getCurrentUID();
+        return ($uidToCheck == $currentUid) ? true : false;
+    }
 }

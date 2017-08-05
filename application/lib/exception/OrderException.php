@@ -11,6 +11,6 @@ namespace app\lib\exception;
 
 class OrderException extends BaseException {
     public $code = 404;
-    public $message = "Oder doesn't exist";
+    public $message = "Oder doesn't exist, please check id";
     public $errorCode = 80000;
 }

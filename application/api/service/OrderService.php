@@ -119,6 +119,19 @@ class OrderService {
         }
     }
 
+    //公有方法查询库存量
+    public function checkOrderStock($orderID) {
+        //我写的
+//        $orderProducts = OrderProductModel::get($orderID);
+        //为什么不用get?get是干什么的?
+        $orderProducts = OrderProductModel::where('order_id', '=', $orderID)
+                                          ->select();
+        $this->rawProducts = $orderProducts;
+        $this->mProductsDatabase = $this->getProductsByRaw($this->rawProducts);
+        $status = $this->$this->getOrderStatus();
+        return $status;
+    }
+
     //判断库存量业务逻辑
     private function getOrderStatus() {
         //一组商品中任何一个商品缺货都认为订单失败
@@ -174,6 +187,7 @@ class OrderService {
         foreach ($raw as $item) {
             array_push($rawPIDs, $item['product_id']);
         }
+        //传一个数组查询所有
         $products = ProductModel::all($rawPIDs)
                                 ->visible(['id', 'price', 'stock', 'name', 'main_img_url'])//查询出来是个collection转化成数组更好!
                                 ->toArray();
