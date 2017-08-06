@@ -78,13 +78,53 @@ class PayService {
     }
 
     private function getPaySignature($wxOrderData) {
+        //这个地方返回appid不一致或者mchid不一致,因为SDK用的默认的
         $wxOrder = \WxPayApi::unifiedOrder($wxOrderData);
+        $wxOrder = ['appid' => 'aaaaaa', 'mch_id' => 'bbbbbb', 'nonce_str' => 'fklhroeihg', 'prepay_id' => 'fklhroeihg',
+                    'result_code' => 'SUCCESS', 'return_code' => 'SUCCESS', 'return_msg' => 'OK',
+                    'sign' => '5K8264ILTKCH16CQ2502SI8ZNMTM67VS', 'sign_type' => 'JSAPI'
+
+        ];
+        $wxOrder['prepay_id'] = $this->fakePrepayID();
         if ($wxOrder['return_code'] != 'SUCCESS' || $wxOrder['result_code'] != 'SUCCESS') {
             Log::record($wxOrder, 'error');
             Log::record('获取预支付订单失败', 'error');
 //            throw new Exception('获取预支付订单失败');
         }
-        return null;
+        //给用户推送模板消息用到prepayid
+        $this->recordPreOrder($wxOrder);
+        $data = $this->signData($wxOrder);
+        return $data;
+    }
+
+    private function signData($wxOrder) {
+        $jsApiPayData = new \WxPayJsApiPay();
+        $jsApiPayData->SetAppid(config('wx_config.app_id'));
+        $jsApiPayData->SetTimeStamp((string)time());
+        //生成随机字符串
+        $rand = md5(time() . mt_rand(0, 1000));
+        $jsApiPayData->SetNonceStr($rand);
+        $jsApiPayData->SetPackage('prepay_id = ' . $wxOrder['prepay_id']);
+        $jsApiPayData->SetSignType('MD5');
+        //算签名
+        $sign = $jsApiPayData->MakeSign();
+        //获得所有参数
+        $rawValues = $jsApiPayData->GetValues();
+        //添加签名参数
+        $rawValues['paySign'] = $sign;
+        //并不像让小程序知道appid,删除之
+        unset($rawValues['appId']);
+        return $rawValues;
+    }
+
+    private function fakePrepayID() {
+        return $randomCharts = getRandChar(32);
+    }
+
+    private function recordPreOrder($wxOrder) {
+        //更新操作
+        OrderModel::where('id', '=', $this->orderID)
+                  ->update(['prepay_id' => $wxOrder['prepay_id']]);
     }
 
     private function valideOrder() {
