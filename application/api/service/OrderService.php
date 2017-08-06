@@ -128,7 +128,7 @@ class OrderService {
                                           ->select();
         $this->rawProducts = $orderProducts;
         $this->mProductsDatabase = $this->getProductsByRaw($this->rawProducts);
-        $status = $this->$this->getOrderStatus();
+        $status = $this->getOrderStatus();
         return $status;
     }
 
