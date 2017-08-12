@@ -133,6 +133,7 @@ class OrderService {
     }
 
     //判断库存量业务逻辑
+    //每次判断库存量都要通过拿到raw 和原始数据重新比较
     private function getOrderStatus() {
         //一组商品中任何一个商品缺货都认为订单失败
         //pStatusArray保存订单商品详细信息,客户端可以在历史订单和未支付订单中查看
