@@ -24,6 +24,10 @@ class Pay extends BaseController {
         return $pay->pay();
     }
 
+    public function getOrdersByUser($page = 1, $size = 15) {
+
+    }
+
     //只调一次和连续不断调用是有区别的
     public function receiveNotify() {
         //微信会有一个时间频率连续调用我们的支付回调借口
@@ -39,5 +43,11 @@ class Pay extends BaseController {
         //微信回调格式:post请求,不带参数, 返回结果携带xml数据
         $notify = new MyWxNotify();
         $notify->Handle();
+        //因为微信回调不能带参数 所以不能直加?xdebug=???来调试 于是用转发的方式
+        //$xmlData = file_get_contents('php://input');
+//        $result = curl_post_raw('http:/z.cn/api/v1/pay/re_notify?XDEBUG_SESSION_START=13133',
+//            $xmlData);
+//        return $result;
+//        Log::error($xmlData);
     }
 }
