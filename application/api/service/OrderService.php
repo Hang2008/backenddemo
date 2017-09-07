@@ -139,12 +139,12 @@ class OrderService {
         //pStatusArray保存订单商品详细信息,客户端可以在历史订单和未支付订单中查看
         $status = ['pass' => true, 'sumPrice' => 0, 'totalCount' => 0, 'pStatusArray' => []];
         foreach ($this->rawProducts as $product) {
-            $pStatus = $this->getProductStatus($product['product_id'], $product['count'], $this->mProductsDatabase);
+            $pStatus = $this->getProductStatus($product['product_id'], $product['counts'], $this->mProductsDatabase);
             //任何一个商品缺货都把订单pass设为false
             if (!$pStatus['haveStock']) {
                 $status['pass'] = false;
             }
-            $status['totalCount'] += $product['count'];
+            $status['totalCount'] += $product['counts'];
             $status['sumPrice'] += $pStatus['totalPrice'];
             array_push($status['pStatusArray'], $pStatus);
         }
@@ -155,7 +155,7 @@ class OrderService {
     //$pIndex表示$rawPID在$products数组中id 的序号
     private function getProductStatus($rawPID, $rawCount, $products) {
         $pIndex = -1;
-        $pStatus = ['id' => null, 'haveStock' => false, 'count' => 0, 'name' => '', 'totalPrice' => 0];
+        $pStatus = ['id' => null, 'haveStock' => false, 'counts' => 0, 'name' => '', 'totalPrice' => 0, 'price' => 0, 'main_img_url' => null];
 
         for ($i = 0; $i < count($products); $i++) {
             if ($rawPID == $products[$i]['id']) {
@@ -171,8 +171,10 @@ class OrderService {
             $product = $products[$pIndex];
             $pStatus['id'] = $product['id'];
             $pStatus['name'] = $product['name'];
-            $pStatus['count'] = $rawCount;
+            $pStatus['counts'] = $rawCount;
             $pStatus['totalPrice'] = $product['price'] * $rawCount;
+            $pStatus['price'] = $product['price'];
+            $pStatus['main_img_url'] = $product['main_img_url'];
 
             if ($product['stock'] - $rawCount >= 0) {
                 $pStatus['haveStock'] = true;

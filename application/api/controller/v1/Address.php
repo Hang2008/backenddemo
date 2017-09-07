@@ -10,6 +10,7 @@ namespace app\api\controller\v1;
 
 
 use app\api\controller\BaseController;
+use app\api\model\UserAddressModel;
 use app\api\model\UserModel;
 use app\api\service\Token as TokenService;
 use app\api\validate\AddressNew;
@@ -19,7 +20,26 @@ use app\lib\exception\UserNotFoundException;
 //为了使用前置方法必须继承基类控制器
 class Address extends BaseController {
     //表示只有createOrUpdateAddress方法需要前置操作checkUserPrivilege
-    protected $beforeActionList = ['checkUserPrivilege' => ['only' => 'createOrUpdateAddress']];
+    protected $beforeActionList = ['checkUserPrivilege' => ['only' => 'createOrUpdateAddress, getUserAddress']];
+
+
+    /**
+     * 获取用户地址信息
+     * @return UserAddress
+     * @throws UserException
+     */
+    public function getUserAddress(){
+        $uid = TokenService::getCurrentUid();
+        $userAddress = UserAddressModel::where('user_id', $uid)
+                                  ->find();
+        if(!$userAddress){
+            throw new UserNotFoundException([
+                'message' => '用户地址不存在',
+                'errorCode' => 60001
+            ]);
+        }
+        return $userAddress;
+    }
 
     public function createOrUpdateAddress() {
         $validate = new AddressNew();

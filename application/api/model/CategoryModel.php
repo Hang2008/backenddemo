@@ -11,6 +11,7 @@ namespace app\api\model;
 
 class CategoryModel extends BaseModel {
     protected $table = 'category';
+    protected $hidden = ['delete_time', 'update_time'];
 
     public function topicImg() {
         //一对一的关系看情况用belongsTo或者hasOne
